@@ -1,0 +1,38 @@
+{
+  "name": "express-react-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "\"\"",
+  "scripts": {
+    "install:client": "npm install --prefix client",
+    "install:server": "npm install --prefix server",
+    "install": "npm run install:client && npm run install:server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "npm run build --prefix server",
+    "build": "npm run build:client && npm run build:server",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev": "concurrently 'npm:dev:client' 'npm:dev:server'",
+    "start": "npm run start --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhasuraj01/express-react-auth.git"
+  },
+  "keywords": [
+    "express",
+    "react",
+    "auth",
+    "login",
+    "signup"
+  ],
+  "author": "jhasuraj01",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jhasuraj01/express-react-auth/issues"
+  },
+  "homepage": "https://github.com/jhasuraj01/express-react-auth#readme",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
