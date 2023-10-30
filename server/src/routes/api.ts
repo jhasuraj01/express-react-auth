@@ -25,6 +25,13 @@ authRouter.post(
   AuthRoutes.login,
 );
 
+// Signup user
+authRouter.post(
+  Paths.Auth.SignUp,
+  validate('name', 'email', 'password'),
+  AuthRoutes.signup,
+);
+
 // Logout user
 authRouter.get(
   Paths.Auth.Logout,

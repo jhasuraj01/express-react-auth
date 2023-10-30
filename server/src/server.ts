@@ -57,6 +57,9 @@ app.use((
   if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
     logger.err(err, true);
   }
+  if (res.headersSent) {
+		return next(err);
+	}
   let status = HttpStatusCodes.BAD_REQUEST;
   if (err instanceof RouteError) {
     status = err.status;
@@ -69,7 +72,7 @@ app.use((
 
 // Set views directory (html)
 const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
+// app.set('views', viewsDir);
 
 // Set static directory (js and css).
 const staticDir = path.join(__dirname, 'public');
