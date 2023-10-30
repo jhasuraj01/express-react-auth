@@ -10,8 +10,9 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { ErrorPage, HomePage, LoginPage, SignUpPage } from './pages';
+import { ErrorPage, HomePage, LoginPage, NotFoundPage, SignUpPage } from './pages';
 import { SingletonLayout } from './layout';
+import { SecuredComponents, UnSecuredComponents } from './components';
 
 const router = createBrowserRouter([
   {
@@ -21,23 +22,45 @@ const router = createBrowserRouter([
     children: [
       {
         path: "login",
-        element: <LoginPage />,
+        element: (
+          <UnSecuredComponents>
+            <LoginPage />
+          </UnSecuredComponents>
+        ),
         errorElement: <ErrorPage />,
         index: true,
       },
       {
         path: "signup",
-        element: <SignUpPage />,
+        element: (
+          <UnSecuredComponents>
+            <SignUpPage />
+          </UnSecuredComponents>
+        ),
         errorElement: <ErrorPage />,
         index: true,
       },
     ]
   },
   {
-    path: '/',
-    element: <HomePage />,
+    path: "/",
+    element: <SingletonLayout />,
     errorElement: <ErrorPage />,
-    index: true,
+    children: [
+      {
+        element: (
+          <SecuredComponents>
+            <HomePage />
+          </SecuredComponents>
+        ),
+        errorElement: <ErrorPage />,
+        index: true,
+      }
+    ]
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />
   }
 ]);
 

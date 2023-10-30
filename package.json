@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/jhasuraj01/express-react-auth#readme",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "password-validator": "^5.3.0"
   }
 }

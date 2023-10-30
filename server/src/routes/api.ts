@@ -38,6 +38,12 @@ authRouter.get(
   AuthRoutes.logout,
 );
 
+// Authenticated user
+authRouter.get(
+  Paths.Auth.User,
+  AuthRoutes.getAuthenticatedUser,
+);
+
 // Add AuthRouter
 apiRouter.use(Paths.Auth.Base, authRouter);
 

@@ -75,6 +75,8 @@ export const SignUpPage: React.FC = () => {
             label="Full Name"
             rules={[
               { required: true, message: 'Name can\'t be blank!' },
+              { min: 3, message: 'Name should be atleast 3 characters long'},
+              { max: 20, message: 'Name should be atmost 20 characters long'},
             ]}
           >
             <Input
@@ -106,10 +108,11 @@ export const SignUpPage: React.FC = () => {
             rules={[
               { required: true, message: 'Password can\'t be blank!' },
               {
-                validator: (_, value) =>
-                  validatePassword(value)
-                    ? Promise.resolve()
-                    : Promise.reject("Password is Invalid"),
+                validator: (_, value) => {
+                  const result = validatePassword(value)
+                  return result === true  ? Promise.resolve()
+                    : Promise.reject(result ?? "Invalid Password");
+                }
               },
             ]}
             tooltip="Please use a combination of upper and lower case alphabets, numbers and special symbols for your password."

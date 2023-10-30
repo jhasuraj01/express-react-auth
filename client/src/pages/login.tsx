@@ -1,4 +1,4 @@
-import { LockOutlined, MailOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined, LoginOutlined } from '@ant-design/icons';
 import { Alert, Button, Card, Checkbox, Flex, Form, Image, Input, Typography } from 'antd';
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -93,10 +93,11 @@ export const LoginPage: React.FC = () => {
             rules={[
               { required: true, message: 'Please input your Password!' },
               {
-                validator: (_, value) =>
-                  validatePassword(value)
-                    ? Promise.resolve()
-                    : Promise.reject("Password is Invalid"),
+                validator: (_, value) => {
+                  const result = validatePassword(value)
+                  return result === true  ? Promise.resolve()
+                    : Promise.reject(result ?? "Invalid Password");
+                }
               },
             ]}
             tooltip="Please use a combination of upper and lower case alphabets, numbers and special symbols for your password."
@@ -120,7 +121,7 @@ export const LoginPage: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Flex justify='center'>
-              <Button type="primary" htmlType="submit" size='large' icon={<ArrowRightOutlined />} loading={loading}>Login Securely</Button>
+              <Button type="primary" htmlType="submit" size='large' icon={<LoginOutlined />} loading={loading}>Login Securely</Button>
             </Flex>
           </Form.Item>
           <Form.Item>

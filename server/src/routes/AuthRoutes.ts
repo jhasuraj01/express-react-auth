@@ -3,7 +3,8 @@ import SessionUtil from '@src/util/SessionUtil';
 import AuthService from '@src/services/AuthService';
 
 import { IReq, IRes } from './types/express/misc';
-
+import { ISessionUser } from '@src/models/User';
+import { JwtPayload } from 'jsonwebtoken';
 
 // **** Types **** //
 
@@ -17,6 +18,8 @@ interface ISignupReq {
   email: string;
   password: string;
 }
+
+type TSessionData = ISessionUser & JwtPayload;
 
 
 // **** Functions **** //
@@ -62,10 +65,27 @@ function logout(_: IReq, res: IRes) {
   return res.status(HttpStatusCodes.OK).end();
 }
 
+async function getAuthenticatedUser(req: IReq, res: IRes) {
+  
+  const sessionData = await SessionUtil.getSessionData<TSessionData>(req);
+
+  if (typeof sessionData === 'object') {
+    return res
+      .status(HttpStatusCodes.OK)
+      .json(sessionData)
+  // Return an unauth error if user is not an admin
+  } else {
+    return res
+      .status(HttpStatusCodes.UNAUTHORIZED)
+      .json({ error: 'User is not authenticated' });
+  }
+}
+
 // **** Export default **** //
 
 export default {
   login,
   logout,
   signup,
+  getAuthenticatedUser,
 } as const;
