@@ -38,15 +38,22 @@ function getSessionData<T>(req: Request): Promise<string | T | undefined> {
 async function addSessionData(
   res: Response,
   data: string | object,
+  isSessionLogin = false,
 ): Promise<Response> {
   if (!res || !data) {
     throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
   }
   // Setup JWT
-  const jwt = await _sign(data),
-    { Key, Options } = EnvVars.CookieProps;
+  const jwt = await _sign(data);
+  const { Key, Options } = EnvVars.CookieProps;
+
+  const cookieOptions = {
+    ...Options,
+    maxAge: isSessionLogin ? undefined : Options.maxAge,
+  }
+
   // Return
-  return res.cookie(Key, jwt, Options);
+  return res.cookie(Key, jwt, cookieOptions);
 }
 
 /**

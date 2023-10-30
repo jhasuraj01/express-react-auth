@@ -11,6 +11,7 @@ import { JwtPayload } from 'jsonwebtoken';
 interface ILoginReq {
   email: string;
   password: string;
+  isSessionLogin: boolean;
 }
 
 interface ISignupReq {
@@ -28,7 +29,9 @@ type TSessionData = ISessionUser & JwtPayload;
  * Login a user.
  */
 async function login(req: IReq<ILoginReq>, res: IRes) {
-  const { email, password } = req.body;
+  const { email, password, isSessionLogin } = req.body;
+
+  console.log({ email, password, isSessionLogin })
   // Login
   const user = await AuthService.login(email, password);
   // Setup Admin Cookie
@@ -37,7 +40,7 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
     email: user.email,
     name: user.name,
     role: user.role,
-  });
+  }, isSessionLogin === true);
   // Return
   return res.status(HttpStatusCodes.OK).end();
 }
