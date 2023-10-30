@@ -11,6 +11,7 @@ export default {
     SignUp: '/signup',
     Logout: '/logout',
     User: '/user',
+    Totp: '/totp',
   },
   Users: {
     Base: '/users',

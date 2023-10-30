@@ -28,7 +28,7 @@ authRouter.post(
 // Signup user
 authRouter.post(
   Paths.Auth.SignUp,
-  validate('name', 'email', 'password'),
+  validate('name', 'email', 'password', 'totpSecret'),
   AuthRoutes.signup,
 );
 
@@ -42,6 +42,11 @@ authRouter.get(
 authRouter.get(
   Paths.Auth.User,
   AuthRoutes.getAuthenticatedUser,
+);
+// Authenticated user
+authRouter.get(
+  Paths.Auth.Totp,
+  AuthRoutes.getTotp,
 );
 
 // Add AuthRouter

@@ -1,6 +1,6 @@
 import { LockOutlined, MailOutlined, FileTextOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Flex, Form, Image, Input, Typography } from 'antd';
-import React, { useState } from 'react';
+import { Alert, Button, Card, Flex, Form, Image, Input, QRCode, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import undrawFingerprint from '../assets/undraw-fingerprint.svg';
 import { validateEmail, validatePassword } from '../utils';
@@ -15,9 +15,11 @@ export const SignUpPage: React.FC = () => {
 
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [totp, setTotp] = useState<{ secret: string, uri: string }>()
 
   const onFinish = (values: SignupFormFields) => {
+    if(totp === undefined) return;
     setLoading(true)
     setError(null)
     const options: RequestInit = {
@@ -26,6 +28,7 @@ export const SignUpPage: React.FC = () => {
         name: values.name,
         email: values.email,
         password: values.password,
+        totpSecret: totp.secret
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -48,6 +51,31 @@ export const SignUpPage: React.FC = () => {
         setLoading(false)
       })
   };
+
+  const loadTotp = async () => {
+    fetch('/api/auth/totp')
+      .then(async res => {
+        if (res.ok) {
+          return res.json()
+        }
+        else {
+          throw Error('Failed to generate TOTP. Please reload the page!')
+        }
+      })
+      .then(data => {
+        setTotp(data as { secret: string, uri: string })
+        console.log(data);
+        setLoading(false)
+      })
+      .catch(error => {
+        setError(error)
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => { 
+    loadTotp();
+   }, [])
 
   return (
     <Card>
@@ -143,6 +171,15 @@ export const SignUpPage: React.FC = () => {
               size='large'
             />
           </Form.Item>
+          {
+            totp?.uri &&
+            <Flex gap="small" align='center' vertical>
+              <Typography.Text>Scan to Add 2FA Authentication</Typography.Text>
+              <Form.Item>
+                <QRCode value={totp.uri} />
+              </Form.Item>
+            </Flex>
+          }
           <Form.Item>
             <Flex justify='center'>
               <Button

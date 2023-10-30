@@ -16,6 +16,7 @@ export interface IUser {
   name: string;
   email: string;
   pwdHash?: string;
+  totpSecret?: string;
   role?: UserRoles;
 }
 
@@ -38,6 +39,7 @@ function new_(
   role?: UserRoles,
   pwdHash?: string,
   id?: number, // id last cause usually set by db
+  totpSecret?: string,
 ): IUser {
   return {
     id: (id ?? -1),
@@ -45,6 +47,7 @@ function new_(
     email: (email ?? ''),
     role: (role ?? UserRoles.Standard),
     pwdHash: (pwdHash ?? ''),
+    totpSecret: (totpSecret ?? ''),
   };
 }
 
@@ -58,7 +61,7 @@ function from(param: object): IUser {
   }
   // Get user instance
   const p = param as IUser;
-  return new_(p.name, p.email, p.role, p.pwdHash, p.id);
+  return new_(p.name, p.email, p.role, p.pwdHash, p.id, p.totpSecret);
 }
 
 /**

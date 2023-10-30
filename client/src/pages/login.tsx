@@ -10,6 +10,7 @@ interface LoginFormFields {
   email: string;
   password: string;
   isSessionLogin: boolean;
+  totpToken: string;
 }
 
 export const LoginPage: React.FC = () => {
@@ -27,6 +28,7 @@ export const LoginPage: React.FC = () => {
         email: values.email,
         password: values.password,
         isSessionLogin: values.isSessionLogin,
+        totpToken: values.totpToken,
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -105,6 +107,16 @@ export const LoginPage: React.FC = () => {
             <Input.Password
               addonBefore={<LockOutlined />}
               placeholder="Abc@123..."
+              size='large'
+            />
+          </Form.Item>
+          <Form.Item
+            name="totpToken"
+            label="Authenticator App Code"
+          >
+            <Input.Password
+              addonBefore={<LockOutlined />}
+              placeholder="123456"
               size='large'
             />
           </Form.Item>
