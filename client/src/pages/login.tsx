@@ -46,7 +46,7 @@ export const LoginPage: React.FC = () => {
         setLoading(false)
       })
       .catch(error => {
-        setError(error)
+        setError(String(error))
         setLoading(false)
       })
   };

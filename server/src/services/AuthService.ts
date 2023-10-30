@@ -7,6 +7,7 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { RouteError } from '@src/other/classes';
 import { IUser, UserRoles } from '@src/models/User';
 import * as OTPAuth from "otpauth";
+import { randomBytes } from 'crypto'
 
 // **** Variables **** //
 
@@ -74,7 +75,7 @@ async function login(email: string, password: string, totpToken?: string): Promi
   return user;
 }
 
-async function signup(name: string, email: string, password: string, totpSecret: string): Promise<IUser> {
+async function signup(name: string, email: string, password: string, totpSecret?: string): Promise<IUser> {
   
   // Fetch user
   const user: IUser = {
@@ -91,9 +92,22 @@ async function signup(name: string, email: string, password: string, totpSecret:
   return user;
 }
 
+const generateRandomString = (myLength: number) => {
+  const chars =
+    "QWERTYUIOPASDFGHJKLZXCVBNM";
+  const randomArray = Array.from(
+    { length: myLength },
+    (v, k) => chars[Math.floor(Math.random() * chars.length)]
+  );
+
+  const randomString = randomArray.join("");
+  return randomString;
+};
+
 async function getTotp() {
-  const secret = "dfbkljfgb";
+  const secret = generateRandomString(20);
   const totp = totpFactory(secret);
+
   return {
     secret,
     uri: totp.toString(),

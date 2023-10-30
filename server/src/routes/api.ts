@@ -28,7 +28,7 @@ authRouter.post(
 // Signup user
 authRouter.post(
   Paths.Auth.SignUp,
-  validate('name', 'email', 'password', 'totpSecret'),
+  validate('name', 'email', 'password'),
   AuthRoutes.signup,
 );
 

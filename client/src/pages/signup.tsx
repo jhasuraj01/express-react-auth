@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined, FileTextOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Flex, Form, Image, Input, QRCode, Typography } from 'antd';
+import { Alert, Button, Card, Checkbox, Flex, Form, Image, Input, QRCode, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import undrawFingerprint from '../assets/undraw-fingerprint.svg';
@@ -15,11 +15,12 @@ export const SignUpPage: React.FC = () => {
 
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [enable2FA, setEnable2FA] = useState<boolean>(true);
   const [totp, setTotp] = useState<{ secret: string, uri: string }>()
 
   const onFinish = (values: SignupFormFields) => {
-    if(totp === undefined) return;
+    if (totp === undefined) return;
     setLoading(true)
     setError(null)
     const options: RequestInit = {
@@ -28,7 +29,7 @@ export const SignUpPage: React.FC = () => {
         name: values.name,
         email: values.email,
         password: values.password,
-        totpSecret: totp.secret
+        totpSecret: enable2FA ? totp.secret : undefined,
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -41,18 +42,19 @@ export const SignUpPage: React.FC = () => {
         }
         else {
           const output = await res.json();
-          setError(output.error ?? res.statusText)
+          setError(String(output.error) ?? res.statusText)
         }
         setLoading(false)
       })
       .catch(error => {
         console.log(error)
-        setError(error)
+        setError(String(error))
         setLoading(false)
       })
   };
 
   const loadTotp = async () => {
+    setLoading(true)
     fetch('/api/auth/totp')
       .then(async res => {
         if (res.ok) {
@@ -73,9 +75,10 @@ export const SignUpPage: React.FC = () => {
       })
   }
 
-  useEffect(() => { 
+  useEffect(() => {
+    if (!enable2FA || totp !== undefined) return;
     loadTotp();
-   }, [])
+  }, [enable2FA])
 
   return (
     <Card>
@@ -103,8 +106,8 @@ export const SignUpPage: React.FC = () => {
             label="Full Name"
             rules={[
               { required: true, message: 'Name can\'t be blank!' },
-              { min: 3, message: 'Name should be atleast 3 characters long'},
-              { max: 20, message: 'Name should be atmost 20 characters long'},
+              { min: 3, message: 'Name should be atleast 3 characters long' },
+              { max: 20, message: 'Name should be atmost 20 characters long' },
             ]}
           >
             <Input
@@ -138,7 +141,7 @@ export const SignUpPage: React.FC = () => {
               {
                 validator: (_, value) => {
                   const result = validatePassword(value)
-                  return result === true  ? Promise.resolve()
+                  return result === true ? Promise.resolve()
                     : Promise.reject(result ?? "Invalid Password");
                 }
               },
@@ -171,14 +174,25 @@ export const SignUpPage: React.FC = () => {
               size='large'
             />
           </Form.Item>
+          <Form.Item
+            name="is2FAEnabled"
+            valuePropName="checked"
+            tooltip="In addition to password you will need authentication token everytime you login"
+            label="Multi Factor Authentication"
+            initialValue={enable2FA}
+          >
+            <Checkbox onChange={_ => setEnable2FA(!enable2FA)}>
+              Enable 2FA using Authenticator App?
+            </Checkbox>
+          </Form.Item>
           {
-            totp?.uri &&
-            <Flex gap="small" align='center' vertical>
-              <Typography.Text>Scan to Add 2FA Authentication</Typography.Text>
-              <Form.Item>
+            enable2FA && totp?.uri &&
+            <Form.Item>
+              <Flex gap="small" align='center' vertical>
                 <QRCode value={totp.uri} />
-              </Form.Item>
-            </Flex>
+                <Typography.Text>Scan to Add 2FA Authentication</Typography.Text>
+              </Flex>
+            </Form.Item>
           }
           <Form.Item>
             <Flex justify='center'>

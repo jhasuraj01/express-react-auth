@@ -19,7 +19,7 @@ interface ISignupReq {
   name: string;
   email: string;
   password: string;
-  totpSecret: string;
+  totpSecret?: string;
 }
 
 type TSessionData = ISessionUser & JwtPayload;
